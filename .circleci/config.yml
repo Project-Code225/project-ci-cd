@@ -1,5 +1,4 @@
 version: 2.1
-
 jobs:
   build:
     docker:
@@ -25,6 +24,11 @@ jobs:
       - run:
           name: Build Docker Image
           command: docker build -t my-node-app .
+      - run:
+          name: Print Docker Credentials
+          command: |
+            echo "DOCKER_USERNAME: $DOCKER_USERNAME"
+            echo "DOCKER_PASSWORD: $DOCKER_PASSWORD"
       - run:
           name: Push Docker Image
           command: |
