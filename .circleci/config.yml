@@ -1,0 +1,34 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: node:18
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: Install Dependencies
+          command: npm install
+      - run:
+          name: Set Permissions
+          command: chmod -R 755 ./node_modules/.bin
+      - run:
+          name: Run Tests
+          command: npm test
+      - run:
+          name: Build Docker Image
+          command: docker build -t my-node-app .
+      - run:
+          name: Push Docker Image
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker tag my-node-app $DOCKER_USERNAME/my-node-app:latest
+            docker push $DOCKER_USERNAME/my-node-app:latest
+
+workflows:
+  version: 2
+  build_and_push:
+    jobs:
+      - build
